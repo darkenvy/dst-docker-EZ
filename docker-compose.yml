@@ -1,0 +1,41 @@
+version: "2"
+services:
+  overworld:
+    image: dstacademy/dontstarvetogether:0.8
+    container_name: overworld
+    hostname: overworld
+    tty: true
+    stdin_open: true
+    command: dst-server start --update=all
+    env_file: overworld.env
+    environment:
+      - LEVELDATA_OVERRIDES=${OVERWORLD_LEVELDATA_OVERRIDES}
+      - TOKEN
+    ports:
+      - "10999:10999/udp"
+    volumes:
+      - ./modoverrides.lua:/var/lib/dsta/cluster/overworld/modoverrides.lua
+      - ./modsettings.lua:/opt/dst/mods/modsettings.lua:ro
+      - ./dedicated_server_mods_setup.lua:/opt/dst/mods/dedicated_server_mods_setup.lua:ro
+      - ./overworld:/var/lib/dsta/cluster
+      
+  underworld:
+    image: dstacademy/dontstarvetogether:0.8
+    container_name: underworld
+    hostname: underworld
+    tty: true
+    stdin_open: true
+    command: dst-server start --update=all
+    env_file: underworld.env
+    environment:
+      - LEVELDATA_OVERRIDES=${UNDERWORLD_LEVELDATA_OVERRIDES}
+      - TOKEN
+    ports:
+      - "11000:11000/udp"
+    links:
+      - overworld
+    volumes:
+      - ./modoverrides.lua:/var/lib/dsta/cluster/underworld/modoverrides.lua
+      - ./modsettings.lua:/opt/dst/mods/modsettings.lua:ro
+      - ./dedicated_server_mods_setup.lua:/opt/dst/mods/dedicated_server_mods_setup.lua:ro
+      - ./underworld:/var/lib/dsta/cluster
